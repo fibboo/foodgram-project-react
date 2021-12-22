@@ -3,5 +3,5 @@ from django.urls import include
 
 urlpatterns = [
     url('', include('djoser.urls')),
-    url('', include('djoser.urls.authtoken')),
+    url(r'^auth/', include('djoser.urls.authtoken')),
 ]
