@@ -3,7 +3,7 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
 from rest_framework.serializers import ModelSerializer
 
-from .models import Subscribe
+from .models import Subscription
 
 User = get_user_model()
 
@@ -38,6 +38,8 @@ class CustomUserSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        print(self.context['request'].user, self.context['request'].user.subscriber, self.context['request'].user.subscribed)
-        print(obj, obj.subscriber, obj.subscribed)
-        return self.context['request'].user.subscribed == obj.subscriber
+        subscription = Subscription.objects.filter(
+            subscriber=self.context['request'].user,
+            subscribed=obj
+        ).first()
+        return subscription is not None

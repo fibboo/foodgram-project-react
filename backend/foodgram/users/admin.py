@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from .models import Subscribe
+from .models import Subscription
 
 
-class SubscribeAdmin(admin.ModelAdmin):
+class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('subscriber', 'subscribed',)
     list_select_related = ('subscriber', 'subscribed',)
 
 
-admin.site.register(Subscribe, SubscribeAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)
