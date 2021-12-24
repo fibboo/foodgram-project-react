@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Subscription
+from . import models
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
@@ -8,4 +8,9 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_select_related = ('subscriber', 'subscribed',)
 
 
-admin.site.register(Subscription, SubscriptionAdmin)
+class TagAdmin(admin.ModelAdmin):
+    list = ('name', 'color' 'slug',)
+    readonly_fields = ('slug',)
+
+
+admin.site.register(models.Subscription, SubscriptionAdmin)
