@@ -3,3 +3,4 @@ djangorestframework==3.11.2
 django-filter
 djoser
 django-environ
+Pillow==8.4.0

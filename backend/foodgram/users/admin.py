@@ -8,9 +8,4 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_select_related = ('subscriber', 'subscribed',)
 
 
-class TagAdmin(admin.ModelAdmin):
-    list = ('name', 'color' 'slug',)
-    readonly_fields = ('slug',)
-
-
 admin.site.register(models.Subscription, SubscriptionAdmin)
