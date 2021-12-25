@@ -48,15 +48,15 @@ class Recipe(models.Model):
         'Cooking time', validators=[MinValueValidator(1)],
     )
 
+    class Meta:
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
+
     def get_ingredients(self):
         return "\n".join([i.name for i in self.ingredients.all()])
 
     def get_tags(self):
         return "\n".join([i.name for i in self.tags.all()])
-
-    class Meta:
-        verbose_name = 'Рецепт'
-        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.name

@@ -19,7 +19,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'name', 'author', 'cooking_time', 'get_ingredients', 'get_tags',
     )
-    filter_horizontal = ('ingredients', 'tags',)
     list_select_related = ('author',)
     search_fields = ('name', 'author',)
     list_filter = ('cooking_time', 'author',)
