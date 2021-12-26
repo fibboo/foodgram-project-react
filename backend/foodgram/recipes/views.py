@@ -1,3 +1,31 @@
-from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, mixins, filters
+from rest_framework.permissions import AllowAny
 
-# Create your views here.
+from .models import Recipe, Tag, Ingredient
+from . import serializers
+
+
+class RetrieveListViewSet(
+    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
+):
+    permission_classes = (AllowAny,)
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = serializers.RecipeSerializer
+    filter_backends = (DjangoFilterBackend,)
+    search_fields = ('author', 'tags')
+
+
+class TagViewSet(RetrieveListViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = serializers.TagSerializer
+
+
+class IngredientViewSet(RetrieveListViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = serializers.IngredientSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
