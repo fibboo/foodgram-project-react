@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 
 from .models import Recipe, Tag, Ingredient
 from . import serializers
+from .pagination import EmptyPagination
 
 
 class RetrieveListViewSet(
@@ -16,16 +17,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
     filter_backends = (DjangoFilterBackend,)
-    search_fields = ('author', 'tags')
+    filterset_fields = ('author', 'tags')
 
 
 class TagViewSet(RetrieveListViewSet):
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
+    pagination_class = EmptyPagination
 
 
 class IngredientViewSet(RetrieveListViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
+    pagination_class = EmptyPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
