@@ -2,12 +2,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, filters
 from rest_framework.permissions import AllowAny
 
+from .filters import RecipeFilter
 from .models import Recipe, Tag, Ingredient
 from . import serializers
 from .pagination import EmptyPagination
+from .permissions import IsAuthorAdminOrReadOnly
 
 
-class RetrieveListViewSet(
+class RetrieveListMixinView(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
 ):
     permission_classes = (AllowAny,)
@@ -16,17 +18,18 @@ class RetrieveListViewSet(
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
+    permission_classes = (IsAuthorAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('author', 'tags')
+    filterset_class = RecipeFilter
 
 
-class TagViewSet(RetrieveListViewSet):
+class TagMixinView(RetrieveListMixinView):
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
     pagination_class = EmptyPagination
 
 
-class IngredientViewSet(RetrieveListViewSet):
+class IngredientMixinView(RetrieveListMixinView):
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
     pagination_class = EmptyPagination

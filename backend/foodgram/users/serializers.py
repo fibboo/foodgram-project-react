@@ -36,9 +36,13 @@ class CustomUserSerializer(UserSerializer):
             'is_subscribed',
         )
 
+    # don't like implementation. Rewrite
     def get_is_subscribed(self, obj):
-        subscription = Subscription.objects.filter(
-            subscriber=self.context['request'].user,
-            subscribed=obj
-        ).first()
+        if self.context['request'].user.is_authenticated:
+            subscription = Subscription.objects.filter(
+                subscriber=self.context['request'].user,
+                subscribed=obj
+            ).first()
+        else:
+            subscription = None
         return subscription is not None
