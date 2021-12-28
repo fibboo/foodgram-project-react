@@ -2,11 +2,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, filters, permissions
 from rest_framework.permissions import AllowAny
 
-from .filters import RecipeFilter
-from .models import Recipe, Tag, Ingredient
-from . import serializers
-from .pagination import EmptyPagination
-from .permissions import IsAuthorAdminOrReadOnly
+from recipes.filters import RecipeFilter
+from recipes.models import Recipe, Tag, Ingredient
+from recipes import serializers
+from recipes.pagination import EmptyPagination
+from recipes.permissions import IsAuthorAdminOrReadOnly
 
 
 class RetrieveListMixinView(

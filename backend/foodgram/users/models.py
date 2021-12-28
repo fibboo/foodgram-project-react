@@ -50,9 +50,9 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User, verbose_name='User', on_delete=models.CASCADE,
-        related_name='shopping_cart'
+        related_name='shopping_cart',
     )
     recipes = models.ManyToManyField(
         Recipe, verbose_name='Ingredients', through='ShoppingCartRecipe',
@@ -61,6 +61,12 @@ class ShoppingCart(models.Model):
     class Meta:
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user'],
+                name='only one shopping cart for user',
+            ),
+        ]
 
     def get_recipes(self):
         return "\n".join([i.name for i in self.recipes.all()])

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
 
-from .models import Subscription
+from users.models import Subscription, ShoppingCart
 
 User = get_user_model()
 
@@ -24,6 +24,13 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             'first_name': {'required': True},
             'last_name': {'required': True},
         }
+
+    # to-do. handle possible error
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        ShoppingCart.objects.create(user=user)
+
+        return user
 
 
 class CustomUserSerializer(UserSerializer):
