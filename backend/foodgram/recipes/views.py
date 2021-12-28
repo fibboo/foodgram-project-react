@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins, filters
+from rest_framework import viewsets, mixins, filters, permissions
 from rest_framework.permissions import AllowAny
 
 from .filters import RecipeFilter

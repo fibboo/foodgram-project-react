@@ -3,14 +3,9 @@ from rest_framework import permissions
 
 class IsAuthorAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        print(request.data)
-        print(request.query_params)
         return (
             request.user.is_authenticated
-            or (
-                    request.method in permissions.SAFE_METHODS
-                    # and request.query
-            )
+            or request.method in permissions.SAFE_METHODS
         )
 
     def has_object_permission(self, request, view, obj):
