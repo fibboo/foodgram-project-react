@@ -79,7 +79,7 @@ class ShoppingCart(models.Model):
 class ShoppingCartRecipe(models.Model):
     shopping_cart = models.ForeignKey(
         ShoppingCart, on_delete=models.CASCADE,
-        related_name='shopping_cart_recipe',
+        # related_name='shopping_cart_recipe',
     )
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name='shopping_cart_recipe',
