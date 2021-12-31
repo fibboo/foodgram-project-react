@@ -32,7 +32,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
         model = Recipe
 
-    # don't like implementation. Rewrite
+    # to-do don't like implementation. Rewrite
     def get_is_favorited(self, obj):
         if self.context['request'].user.is_authenticated:
             favorite = Favorite.objects.filter(
@@ -43,7 +43,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             favorite = None
         return favorite is not None
 
-    # don't like implementation. Rewrite
+    # to-do don't like implementation. Rewrite
     def get_is_in_shopping_cart(self, obj):
         if self.context['request'].user.is_authenticated:
             shopping_cart = ShoppingCart.objects.get_or_create(

@@ -43,7 +43,7 @@ class CustomUserSerializer(UserSerializer):
             'is_subscribed',
         )
 
-    # don't like implementation. Rewrite
+    # to-do don't like implementation. Rewrite
     def get_is_subscribed(self, obj):
         if self.context['request'].user.is_authenticated:
             subscription = Subscription.objects.filter(

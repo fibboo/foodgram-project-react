@@ -56,6 +56,7 @@ class ShoppingCart(models.Model):
     )
     recipes = models.ManyToManyField(
         Recipe, verbose_name='Ingredients', through='ShoppingCartRecipe',
+        related_name='shopping_cart',
     )
 
     class Meta:
@@ -76,12 +77,17 @@ class ShoppingCart(models.Model):
 
 
 class ShoppingCartRecipe(models.Model):
-    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    shopping_cart = models.ForeignKey(
+        ShoppingCart, on_delete=models.CASCADE,
+        related_name='shopping_cart_recipe',
+    )
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='shopping_cart_recipe',
+    )
 
     class Meta:
-        verbose_name = 'Список рецептов'
-        verbose_name_plural = 'Списки рецептов'
+        verbose_name = 'Рецепт в списке покупок'
+        verbose_name_plural = 'Рецепты в списке покупок'
 
     def __str__(self):
         return f'{self.recipe} in {self.shopping_cart}'
