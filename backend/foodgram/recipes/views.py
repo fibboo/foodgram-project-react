@@ -17,10 +17,15 @@ class RetrieveListMixinView(
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = serializers.RecipeSerializer
     permission_classes = (IsAuthorAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return serializers.RecipeListRetrieveSerializer
+        else:
+            return serializers.RecipeCreateUpdateDestroySerializer
 
 
 class TagMixinView(RetrieveListMixinView):
