@@ -1,8 +1,10 @@
+from django.shortcuts import get_object_or_404
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from users.models import Favorite, ShoppingCartRecipe, ShoppingCart
 from users.serializers import CustomUserSerializer
-from recipes.models import Recipe, Tag, Ingredient
+from recipes.models import Recipe, Tag, Ingredient, TagRecipe, IngredientRecipe
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -17,12 +19,45 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True)
+    ingredients = IngredientSerializer(many=True)
+    image = Base64ImageField()
+
+    class Meta:
+        fields = (
+            'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time',
+        )
+        model = Recipe
+
+    def create(self, validated_data):
+        print(validated_data)
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+
+        for tag in tags:
+            current_tag = get_object_or_404(Tag, pk=tag)
+            TagRecipe.objects.create(tag=current_tag, recipe=recipe)
+
+        for ingredient in ingredients:
+            current_ingredient = get_object_or_404(
+                Ingredient, pk=ingredient['id'],
+            )
+            IngredientRecipe.objects.create(
+                ingredient=current_ingredient, recipe=recipe,
+                amount=ingredient['amount'],
+            )
+
+        return recipe
+
+
+class RecipeListRetrieveSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
     ingredients = IngredientSerializer(many=True)
     is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart =serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
