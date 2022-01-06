@@ -20,7 +20,9 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Tag.objects.all(),
+    )
     ingredients = IngredientSerializer(many=True)
     image = Base64ImageField()
 
@@ -29,11 +31,6 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
             'ingredients', 'tags', 'image', 'name', 'text', 'cooking_time',
         )
         model = Recipe
-
-    def validate_tags(self, value):
-        for i in value:
-            if Tag.objects.filter(pk=i).first() is None:
-                raise serializers.ValidationError('Tag not found')
 
     def create(self, validated_data):
         print(validated_data)

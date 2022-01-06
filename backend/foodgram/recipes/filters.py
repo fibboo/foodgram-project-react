@@ -1,6 +1,7 @@
 import django_filters
+from rest_framework.filters import SearchFilter
 
-from recipes.models import Recipe
+from recipes.models import Recipe, Ingredient
 
 
 class RecipeFilter(django_filters.FilterSet):
@@ -31,3 +32,7 @@ class RecipeFilter(django_filters.FilterSet):
                 )
             return queryset.none()
         return queryset.filter()
+
+
+class IngredientSearchFilter(SearchFilter):
+    search_param = 'name'

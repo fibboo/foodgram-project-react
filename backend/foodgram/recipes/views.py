@@ -2,7 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, filters, permissions
 from rest_framework.permissions import AllowAny
 
-from recipes.filters import RecipeFilter
+from recipes.filters import RecipeFilter, IngredientSearchFilter
 from recipes.models import Recipe, Tag, Ingredient
 from recipes import serializers
 from recipes.pagination import EmptyPagination
@@ -38,5 +38,5 @@ class IngredientMixinView(RetrieveListMixinView):
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
     pagination_class = EmptyPagination
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
+    filter_backends = (IngredientSearchFilter,)
+    search_fields = ('^name',)
