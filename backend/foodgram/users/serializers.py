@@ -25,10 +25,16 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             'last_name': {'required': True},
         }
 
-    # to-do. handle possible error
+    def validate_username(self, value):
+        if value == 'me':
+            raise serializers.ValidationError(
+                'You should not use "me" as a username'
+            )
+        return value
+
     def create(self, validated_data):
         user = super().create(validated_data)
-        ShoppingCart.objects.create(user=user)
+        ShoppingCart.objects.get_or_create(user=user)
 
         return user
 
@@ -43,13 +49,10 @@ class CustomUserSerializer(UserSerializer):
             'is_subscribed',
         )
 
-    # to-do don't like implementation. Rewrite
     def get_is_subscribed(self, obj):
         if self.context['request'].user.is_authenticated:
-            subscription = Subscription.objects.filter(
-                subscriber=self.context['request'].user,
-                subscribed=obj
-            ).first()
-        else:
-            subscription = None
-        return subscription is not None
+            return Subscription.objects.filter(
+                subscriber=self.context['request'].user, subscribed=obj
+            ).exists()
+
+        return None

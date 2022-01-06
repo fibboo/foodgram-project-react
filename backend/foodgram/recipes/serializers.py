@@ -19,11 +19,24 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
 
 
+class IngredientRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit',
+    )
+    amount = serializers.IntegerField()
+
+    class Meta:
+        model = IngredientRecipe
+        fields = ('id', 'name', 'measurement_unit', 'amount', )
+
+
 class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all(),
     )
-    ingredients = IngredientSerializer(many=True)
+    ingredients = IngredientRecipeSerializer(many=True)
     image = Base64ImageField()
 
     class Meta:
@@ -33,24 +46,21 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
         model = Recipe
 
     def create(self, validated_data):
-        print(validated_data)
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(
+            **validated_data, author=self.context['request'].user
+        )
 
         for tag in tags:
-            current_tag = get_object_or_404(Tag, pk=tag)
+            current_tag = get_object_or_404(Tag, pk=tag.id)
             TagRecipe.objects.create(tag=current_tag, recipe=recipe)
 
         for ingredient in ingredients:
-            current_ingredient = get_object_or_404(
-                Ingredient, pk=ingredient['id'],
-            )
-            IngredientRecipe.objects.create(
-                ingredient=current_ingredient, recipe=recipe,
+            IngredientRecipe.objects.get_or_create(
+                ingredient=ingredient['id'], recipe=recipe,
                 amount=ingredient['amount'],
             )
-
         return recipe
 
 
@@ -69,27 +79,21 @@ class RecipeListRetrieveSerializer(serializers.ModelSerializer):
         )
         model = Recipe
 
-    # to-do don't like implementation. Rewrite
     def get_is_favorited(self, obj):
         if self.context['request'].user.is_authenticated:
-            favorite = Favorite.objects.filter(
-                user=self.context['request'].user,
-                recipe=obj
-            ).first()
-        else:
-            favorite = None
-        return favorite is not None
+            return Favorite.objects.filter(
+                user=self.context['request'].user, recipe=obj
+            ).exists()
 
-    # to-do don't like implementation. Rewrite
+        return None
+
     def get_is_in_shopping_cart(self, obj):
         if self.context['request'].user.is_authenticated:
             shopping_cart = ShoppingCart.objects.get_or_create(
                 user=self.context['request'].user,
             )
-            shopping_cart_recipe = ShoppingCartRecipe.objects.filter(
-                shopping_cart=shopping_cart[0],
-                recipe=obj
-            ).first()
-        else:
-            shopping_cart_recipe = None
-        return shopping_cart_recipe is not None
+            return ShoppingCartRecipe.objects.filter(
+                shopping_cart=shopping_cart[0], recipe=obj
+            ).exists()
+
+        return None
