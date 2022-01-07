@@ -1,3 +1,12 @@
-from django.shortcuts import render
+from rest_framework import viewsets, mixins
 
-# Create your views here.
+from users.models import Subscription
+from users.serializers import SubscriptionSerializer
+
+
+class SubscriptionView(
+    mixins.ListModelMixin, mixins.CreateModelMixin,
+    mixins.DestroyModelMixin, viewsets.GenericViewSet,
+):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
 
+from recipes.models import Recipe
 from users.models import Subscription, ShoppingCart
 
 User = get_user_model()
@@ -56,3 +57,23 @@ class CustomUserSerializer(UserSerializer):
             ).exists()
 
         return None
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time',)
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    # subscribed = CustomUserSerializer(read_only=True)
+    # recipes = RecipeSerializer(many=True)
+
+    class Meta:
+        model = Subscription
+        # fields = ('subscribed', 'recipes', 'recipes_count',)
+        fields = '__all__'
+
+    # def get_recipes_count(self, obj):
+    #     return obj.subscribed.author
