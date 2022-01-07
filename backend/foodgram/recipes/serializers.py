@@ -70,6 +70,27 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
             )
         return recipe
 
+    def update(self, instance, validated_data):
+        """
+        Adds new ingredients to recipe and deletes those that are not in the
+        request
+        """
+        ingredients = validated_data.pop('ingredients')
+        ingredient_objs = []
+        for ingredient in ingredients:
+            ingredient_objs.append(ingredient['id'])
+            IngredientRecipe.objects.get_or_create(
+                ingredient=ingredient['id'], recipe=instance,
+                amount=ingredient['amount'],
+            )
+        ingredient_recipes = IngredientRecipe.objects.filter(recipe=instance)
+        for i in ingredient_recipes:
+            if i.ingredient not in ingredient_objs:
+                IngredientRecipe.objects.get(
+                    recipe=instance, ingredient=i.ingredient,
+                ).delete()
+        return super().update(instance, validated_data)
+
 
 class RecipeListRetrieveSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
