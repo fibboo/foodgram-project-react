@@ -67,13 +67,14 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    # subscribed = CustomUserSerializer(read_only=True)
-    # recipes = RecipeSerializer(many=True)
+    subscribed = CustomUserSerializer(read_only=True)
+    recipes = RecipeSerializer(many=True, read_only=True)
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Subscription
-        # fields = ('subscribed', 'recipes', 'recipes_count',)
-        fields = '__all__'
+        fields = ('subscribed', 'recipes', 'recipes_count',)
+        # fields = '__all__'
 
-    # def get_recipes_count(self, obj):
-    #     return obj.subscribed.author
+    def get_recipes_count(self, obj):
+        return obj.subscribed.author.count()
