@@ -40,7 +40,7 @@ class Recipe(models.Model):
     image = models.ImageField('Image')
     author = models.ForeignKey(
         User, verbose_name='Author', on_delete=models.CASCADE,
-        related_name='author',
+        related_name='recipes',
     )
     name = models.CharField('Name', max_length=200)
     text = models.TextField('Description')

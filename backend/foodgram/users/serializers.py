@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
 
@@ -66,15 +67,69 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time',)
 
 
-class SubscriptionSerializer(serializers.ModelSerializer):
-    subscribed = CustomUserSerializer(read_only=True)
+class SubscriptionListSerializer(CustomUserSerializer):
     recipes = RecipeSerializer(many=True, read_only=True)
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
-        model = Subscription
-        fields = ('subscribed', 'recipes', 'recipes_count',)
-        # fields = '__all__'
+        model = User
+        fields = (
+            'email', 'id', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count',
+        )
 
     def get_recipes_count(self, obj):
-        return obj.subscribed.author.count()
+        return obj.recipes.count()
+
+
+class SubscriptionCreateDestroySerializer(serializers.ModelSerializer):
+    subscriber = serializers.SerializerMethodField()
+    subscribed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Subscription
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        instance = get_object_or_404(
+            User, pk=int(self._context['view'].kwargs['user_id'])
+        )
+        return SubscriptionListSerializer(instance, context=context).data
+
+    def get_subscriber(self, obj):
+        return self.context['request'].user
+
+    def get_subscribed(self, obj):
+        return get_object_or_404(
+            User, pk=self._context['view'].kwargs['user_id'],
+        )
+
+    def validate(self, attrs):
+        request_user_id = self.context['request'].user.id
+        to_subscribe_user_id = int(self._context['view'].kwargs['user_id'])
+        if request_user_id == to_subscribe_user_id:
+            raise serializers.ValidationError(
+                'You can not subscribe to yourself'
+            )
+        subscription = Subscription.objects.filter(
+            subscriber=self.context['request'].user,
+            subscribed=self._context['view'].kwargs['user_id']
+        ).first()
+        if subscription is not None:
+            raise serializers.ValidationError(
+                'Already following'
+            )
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        subscriber = self.context['request'].user
+        subscribed = get_object_or_404(
+            User, pk=self._context['view'].kwargs['user_id'],
+        )
+        subscription = Subscription.objects.create(
+            subscriber=subscriber,
+            subscribed=subscribed,
+        )
+        return subscription

@@ -6,12 +6,16 @@ from users import views
 
 router = DefaultRouter()
 router.register(
+    r'users/subscriptions', views.SubscriptionListView,
+    basename='subscriptions',
+)
+router.register(
     r'users/(?P<user_id>\d+)/subscriptions',
-    views.SubscriptionView, basename='subscriptions',
+    views.SubscriptionCreateDestroyView, basename='subscriptions',
 )
 
 urlpatterns = [
+    path('', include(router.urls)),
     url('', include('djoser.urls')),
     url(r'^auth/', include('djoser.urls.authtoken')),
-    path('', include(router.urls)),
 ]

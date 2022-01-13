@@ -53,9 +53,7 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
-        return RecipeListRetrieveSerializer(
-            instance, context=context
-        ).data
+        return RecipeListRetrieveSerializer(instance, context=context).data
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
