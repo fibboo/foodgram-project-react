@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, permissions
 
 from recipes.pagination import EmptyPagination
@@ -23,4 +24,14 @@ class SubscriptionCreateDestroyView(
 ):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionCreateDestroySerializer
+    permission_classes = (permissions.IsAuthenticated,)
     pagination_class = EmptyPagination
+
+    def delete(self, request, *args, **kwargs):
+        subscriber = request.user
+        subscribed = get_object_or_404(User, pk=kwargs['user_id'])
+        subscription = Subscription.objects.get(
+            subscriber=subscriber, subscribed=subscribed,
+        )
+        kwargs['pk'] = subscription.id
+        return self.destroy(request, *args, **kwargs)
