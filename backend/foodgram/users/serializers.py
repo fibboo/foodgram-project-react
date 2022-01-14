@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
@@ -68,7 +69,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionListSerializer(CustomUserSerializer):
-    recipes = RecipeSerializer(many=True, read_only=True)
+    recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -77,6 +78,16 @@ class SubscriptionListSerializer(CustomUserSerializer):
             'email', 'id', 'username', 'first_name', 'last_name',
             'is_subscribed', 'recipes', 'recipes_count',
         )
+
+    def get_recipes(self, obj):
+        recipes_limit = (
+            self.context['request'].query_params.get('recipes_limit')
+        )
+        try:
+            recipes = obj.recipes.all()[:int(recipes_limit)]
+        except ValueError:
+            recipes = obj.recipes.all()
+        return RecipeSerializer(recipes, many=True, read_only=True).data
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()

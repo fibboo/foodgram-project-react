@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, permissions
+from rest_framework import viewsets, mixins, permissions, pagination
 
 from recipes.pagination import EmptyPagination
 from users.models import Subscription
@@ -13,6 +13,7 @@ User = get_user_model()
 class SubscriptionListView(mixins.ListModelMixin, viewsets.GenericViewSet, ):
     serializer_class = SubscriptionListSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = pagination.LimitOffsetPagination
 
     def get_queryset(self):
         return User.objects.filter(subscribed__subscriber=self.request.user)
