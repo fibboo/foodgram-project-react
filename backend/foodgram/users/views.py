@@ -27,11 +27,16 @@ class SubscriptionCreateDestroyView(
     permission_classes = (permissions.IsAuthenticated,)
     pagination_class = EmptyPagination
 
-    def delete(self, request, *args, **kwargs):
-        subscriber = request.user
-        subscribed = get_object_or_404(User, pk=kwargs['user_id'])
-        subscription = Subscription.objects.get(
-            subscriber=subscriber, subscribed=subscribed,
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        subscriber = self.request.user
+        subscribed = get_object_or_404(User, pk=self.kwargs['user_id'])
+        subscription = get_object_or_404(
+            Subscription, subscriber=subscriber, subscribed=subscribed,
         )
-        kwargs['pk'] = subscription.id
+        obj = queryset.get(pk=subscription.id)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
