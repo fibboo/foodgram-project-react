@@ -4,3 +4,4 @@ django-filter
 djoser
 django-environ
 Pillow==8.4.0
+drf-extra-fields

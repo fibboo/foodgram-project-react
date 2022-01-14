@@ -40,7 +40,7 @@ class Recipe(models.Model):
     image = models.ImageField('Image')
     author = models.ForeignKey(
         User, verbose_name='Author', on_delete=models.CASCADE,
-        related_name='author',
+        related_name='recipes',
     )
     name = models.CharField('Name', max_length=200)
     text = models.TextField('Description')
@@ -75,8 +75,12 @@ class TagRecipe(models.Model):
 
 
 class IngredientRecipe(models.Model):
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE, related_name='ingredient_recipe',
+    )
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='ingredient_recipe',
+    )
     amount = models.IntegerField(
         'Amount', validators=[MinValueValidator(0.1)],
     )
@@ -84,6 +88,12 @@ class IngredientRecipe(models.Model):
     class Meta:
         verbose_name = 'Ингредиент - Рецепт'
         verbose_name_plural = 'Ингредиенты - Рецепты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['ingredient', 'recipe'],
+                name='unique ingredient for recipe',
+            ),
+        ]
 
     def __str__(self):
         return f'{self.ingredient} {self.recipe}'

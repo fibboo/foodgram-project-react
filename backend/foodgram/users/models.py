@@ -50,17 +50,24 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    user = models.ForeignKey(
+    user = models.OneToOneField(
         User, verbose_name='User', on_delete=models.CASCADE,
-        related_name='shopping_cart'
+        related_name='shopping_cart',
     )
     recipes = models.ManyToManyField(
         Recipe, verbose_name='Ingredients', through='ShoppingCartRecipe',
+        related_name='shopping_cart',
     )
 
     class Meta:
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user'],
+                name='only one shopping cart for user',
+            ),
+        ]
 
     def get_recipes(self):
         return "\n".join([i.name for i in self.recipes.all()])
@@ -70,12 +77,17 @@ class ShoppingCart(models.Model):
 
 
 class ShoppingCartRecipe(models.Model):
-    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    shopping_cart = models.ForeignKey(
+        ShoppingCart, on_delete=models.CASCADE,
+        # related_name='shopping_cart_recipe',
+    )
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='shopping_cart_recipe',
+    )
 
     class Meta:
-        verbose_name = 'Список рецептов'
-        verbose_name_plural = 'Списки рецептов'
+        verbose_name = 'Рецепт в списке покупок'
+        verbose_name_plural = 'Рецепты в списке покупок'
 
     def __str__(self):
         return f'{self.recipe} in {self.shopping_cart}'
