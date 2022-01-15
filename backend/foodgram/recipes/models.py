@@ -51,6 +51,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        ordering = ('-id',)
 
     def get_ingredients(self):
         return "\n".join([i.name for i in self.ingredients.all()])
@@ -69,6 +70,12 @@ class TagRecipe(models.Model):
     class Meta:
         verbose_name = 'Тег - Рецепт'
         verbose_name_plural = 'Теги - Рецепты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['tag', 'recipe'],
+                name='unique tag for recipe',
+            ),
+        ]
 
     def __str__(self):
         return f'{self.tag} {self.recipe}'

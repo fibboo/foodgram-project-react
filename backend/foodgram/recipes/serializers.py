@@ -4,7 +4,7 @@ from rest_framework import serializers, validators
 
 from users.models import Favorite, ShoppingCartRecipe, ShoppingCart
 from users.serializers import CustomUserSerializer
-from recipes.models import Recipe, Tag, Ingredient, TagRecipe, IngredientRecipe
+from .models import Recipe, Tag, Ingredient, TagRecipe, IngredientRecipe
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -40,6 +40,9 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all(),
+        validators=[
+            validators.UniqueValidator(queryset=Recipe.objects.all())
+        ],
     )
     ingredients = IngredientRecipeSerializer(many=True)
     image = Base64ImageField()

@@ -1,7 +1,8 @@
 import django_filters
+from django_filters.fields import Lookup
 from rest_framework.filters import SearchFilter
 
-from recipes.models import Recipe, Ingredient
+from .models import Recipe
 
 
 class RecipeFilter(django_filters.FilterSet):
@@ -15,7 +16,6 @@ class RecipeFilter(django_filters.FilterSet):
         model = Recipe
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart',)
 
-    # to-do don't like implementation. Rewrite
     def filter_is_favorited(self, queryset, name, value):
         if value == 1:
             if self.request.user.is_authenticated:
@@ -23,7 +23,6 @@ class RecipeFilter(django_filters.FilterSet):
             return queryset
         return queryset.filter(favorite_recipe__user__isnull=True)
 
-    # to-do don't like implementation. Rewrite
     def filter_is_in_shopping_cart(self, queryset, name, value):
         if value == 1:
             if self.request.user.is_authenticated:

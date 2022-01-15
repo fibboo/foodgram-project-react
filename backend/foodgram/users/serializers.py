@@ -5,7 +5,7 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
 
 from recipes.models import Recipe
-from users.models import Subscription, ShoppingCart
+from .models import Subscription, ShoppingCart
 
 User = get_user_model()
 
