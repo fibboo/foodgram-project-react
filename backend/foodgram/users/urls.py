@@ -10,8 +10,8 @@ router.register(
     basename='subscriptions',
 )
 router.register(
-    r'users/(?P<user_id>\d+)/subscriptions',
-    views.SubscriptionCreateDestroyView, basename='subscriptions',
+    r'users/(?P<user_id>\d+)/subscribe',
+    views.SubscriptionCreateDestroyView, basename='subscribe',
 )
 
 urlpatterns = [

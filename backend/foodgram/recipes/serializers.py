@@ -101,7 +101,9 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
 class RecipeListRetrieveSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
-    ingredients = IngredientSerializer(many=True)
+    ingredients = IngredientRecipeSerializer(
+        many=True, source='ingredient_recipe'
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 

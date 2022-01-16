@@ -1,6 +1,6 @@
 from .base import *
 
-if DEBUG is True:
-    from .local import *
-else:
+if INFRA is True:
     from .prod import *
+else:
+    from .local import *
