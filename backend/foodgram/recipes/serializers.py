@@ -1,10 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 
 from users.models import ShoppingCartRecipe, ShoppingCart
-from users.serializers import CustomUserSerializer
+from users.serializers import CustomUserSerializer, RecipeSerializer
 from .models import Recipe, Tag, Ingredient, IngredientRecipe, Favorite
+
+User = get_user_model()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -135,8 +138,48 @@ class RecipeListRetrieveSerializer(serializers.ModelSerializer):
         return None
 
 
-# class FavoriteSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Favorite
-#         fields = '__all__'
+class FavoriteSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    recipe = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        instance = get_object_or_404(
+            Recipe, pk=int(self._context['view'].kwargs['recipe_id'])
+        )
+        return RecipeSerializer(instance, context=context).data
+
+    def get_user(self, obj):
+        return self.context['request'].user
+
+    def get_recipe(self, obj):
+        return get_object_or_404(
+            Recipe, pk=self._context['view'].kwargs['recipe_id']
+        )
+
+    def validate(self, attrs):
+        favorite = Favorite.objects.filter(
+            user=self.context['request'].user,
+            recipe=self._context['view'].kwargs['recipe_id']
+        ).first()
+        if favorite is not None:
+            raise serializers.ValidationError(
+                'Already following'
+            )
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        recipe = get_object_or_404(
+            Recipe, pk=self._context['view'].kwargs['recipe_id'],
+        )
+        favorite = Favorite.objects.create(
+            user=user,
+            recipe=recipe,
+        )
+        return favorite
