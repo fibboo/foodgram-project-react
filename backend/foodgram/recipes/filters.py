@@ -1,16 +1,11 @@
-import logging
-
 from django_filters.rest_framework import filters, FilterSet
 from rest_framework.filters import SearchFilter
 
-from .models import Recipe, Tag
-
-logger = logging.getLogger(__name__)
+from .models import Recipe
 
 
 class RecipeFilter(FilterSet):
-    tags = filters.AllValuesFilter(field_name='tags__slug')
-    # tags = django_filters.CharFilter(method='filter_tags')
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     is_favorited = filters.NumberFilter(method='filter_is_favorited')
     is_in_shopping_cart = filters.NumberFilter(
         method='filter_is_in_shopping_cart',
@@ -20,17 +15,6 @@ class RecipeFilter(FilterSet):
         model = Recipe
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart',)
 
-    # def filter_tags(self, queryset, name, value):
-    #     queryset_tags = Tag.objects.all()
-    #     all_tags = []
-    #     for tag in queryset_tags:
-    #         all_tags.append(tag.slug)
-    #     print('all_tags', all_tags)
-    #     print('self.request.query_params', self.request.query_params)
-    #     tags = self.request.query_params.get('tags')
-    #     print('tags', tags)
-    #     print(tags in all_tags)
-    #     return queryset
 
     def filter_is_favorited(self, queryset, name, value):
         if value == 1:
