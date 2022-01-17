@@ -9,6 +9,10 @@ router.register('tags', views.TagMixinView, basename='tags', )
 router.register(
     'ingredients', views.IngredientMixinView, basename='ingredients'
 )
+# router.register(
+#     r'recipes/(?P<recipe_id>\d+)/favorite',
+#     views.FavoriteCreateDeleteView, basename='favorite',
+# )
 
 
 urlpatterns = [

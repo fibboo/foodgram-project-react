@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 
-from users.models import Favorite, ShoppingCartRecipe, ShoppingCart
+from users.models import ShoppingCartRecipe, ShoppingCart
 from users.serializers import CustomUserSerializer
-from .models import Recipe, Tag, Ingredient, IngredientRecipe
+from .models import Recipe, Tag, Ingredient, IngredientRecipe, Favorite
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -133,3 +133,10 @@ class RecipeListRetrieveSerializer(serializers.ModelSerializer):
             ).exists()
 
         return None
+
+
+# class FavoriteSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Favorite
+#         fields = '__all__'

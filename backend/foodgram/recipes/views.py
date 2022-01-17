@@ -3,7 +3,7 @@ from rest_framework import viewsets, mixins, filters, permissions
 from rest_framework.permissions import AllowAny
 
 from .filters import RecipeFilter, IngredientSearchFilter
-from .models import Recipe, Tag, Ingredient
+from .models import Recipe, Tag, Ingredient, Favorite
 from . import serializers
 from .pagination import EmptyPagination
 from .permissions import IsAuthorAdminOrReadOnly
@@ -40,3 +40,12 @@ class IngredientMixinView(RetrieveListMixinView):
     pagination_class = EmptyPagination
     filter_backends = (IngredientSearchFilter,)
     search_fields = ('^name',)
+
+# class FavoriteCreateDeleteView(
+#     mixins.DestroyModelMixin, viewsets.GenericViewSet
+# ):
+#     serializer_class = serializers.FavoriteSerializer()
+#     pagination_class = EmptyPagination
+#
+#     def get_queryset(self):
+#         return Favorite.objects.filter(user=self.request.user)
