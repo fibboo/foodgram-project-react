@@ -34,9 +34,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient, verbose_name='Ingredients', through='IngredientRecipe',
     )
-    tags = models.ManyToManyField(
-        Tag, verbose_name='Tags', through='TagRecipe',
-    )
+    tags = models.ManyToManyField(Tag, verbose_name='Tags')
     image = models.ImageField('Image')
     author = models.ForeignKey(
         User, verbose_name='Author', on_delete=models.CASCADE,
@@ -61,24 +59,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class TagRecipe(models.Model):
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Тег - Рецепт'
-        verbose_name_plural = 'Теги - Рецепты'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['tag', 'recipe'],
-                name='unique tag for recipe',
-            ),
-        ]
-
-    def __str__(self):
-        return f'{self.tag} {self.recipe}'
 
 
 class IngredientRecipe(models.Model):

@@ -4,7 +4,7 @@ from rest_framework import serializers, validators
 
 from users.models import Favorite, ShoppingCartRecipe, ShoppingCart
 from users.serializers import CustomUserSerializer
-from .models import Recipe, Tag, Ingredient, TagRecipe, IngredientRecipe
+from .models import Recipe, Tag, Ingredient, IngredientRecipe
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
 
         for tag in tags:
             current_tag = get_object_or_404(Tag, pk=tag.id)
-            TagRecipe.objects.create(tag=current_tag, recipe=recipe)
+            recipe.tags.add(current_tag)
 
         for ingredient in ingredients:
             IngredientRecipe.objects.get_or_create(

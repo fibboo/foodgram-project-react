@@ -24,13 +24,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('cooking_time', 'author',)
 
 
-class TagRecipeAdmin(admin.ModelAdmin):
-    list_display = ('tag', 'recipe',)
-    list_select_related = ('tag', 'recipe',)
-    search_fields = ('recipe',)
-    list_filter = ('tag',)
-
-
 class IngredientRecipeAdmin(admin.ModelAdmin):
     list_display = ('ingredient', 'recipe',)
     list_select_related = ('ingredient', 'recipe',)
@@ -40,5 +33,4 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
 admin.site.register(models.Tag, TagAdmin)
 admin.site.register(models.Ingredient, IngredientAdmin)
 admin.site.register(models.Recipe, RecipeAdmin)
-admin.site.register(models.TagRecipe, TagRecipeAdmin)
 admin.site.register(models.IngredientRecipe, IngredientRecipeAdmin)

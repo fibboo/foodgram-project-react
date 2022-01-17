@@ -1,6 +1,6 @@
 from .base import *
 
-if INFRA is True:
+if INFRA:
     from .prod import *
 else:
     from .local import *

@@ -1,20 +1,36 @@
-import django_filters
-from django_filters.fields import Lookup
+import logging
+
+from django_filters.rest_framework import filters, FilterSet
 from rest_framework.filters import SearchFilter
 
-from .models import Recipe
+from .models import Recipe, Tag
+
+logger = logging.getLogger(__name__)
 
 
-class RecipeFilter(django_filters.FilterSet):
-    tags = django_filters.CharFilter(field_name='tags__slug')
-    is_favorited = django_filters.NumberFilter(method='filter_is_favorited')
-    is_in_shopping_cart = django_filters.NumberFilter(
+class RecipeFilter(FilterSet):
+    tags = filters.AllValuesFilter(field_name='tags__slug')
+    # tags = django_filters.CharFilter(method='filter_tags')
+    is_favorited = filters.NumberFilter(method='filter_is_favorited')
+    is_in_shopping_cart = filters.NumberFilter(
         method='filter_is_in_shopping_cart',
     )
 
     class Meta:
         model = Recipe
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart',)
+
+    # def filter_tags(self, queryset, name, value):
+    #     queryset_tags = Tag.objects.all()
+    #     all_tags = []
+    #     for tag in queryset_tags:
+    #         all_tags.append(tag.slug)
+    #     print('all_tags', all_tags)
+    #     print('self.request.query_params', self.request.query_params)
+    #     tags = self.request.query_params.get('tags')
+    #     print('tags', tags)
+    #     print(tags in all_tags)
+    #     return queryset
 
     def filter_is_favorited(self, queryset, name, value):
         if value == 1:
@@ -27,7 +43,8 @@ class RecipeFilter(django_filters.FilterSet):
         if value == 1:
             if self.request.user.is_authenticated:
                 return queryset.filter(
-                    shopping_cart_recipe__shopping_cart__user__pk=self.request.user.id
+                    shopping_cart_recipe__shopping_cart__user__pk=
+                    self.request.user.id
                 )
             return queryset.none()
         return queryset.filter()
