@@ -130,7 +130,7 @@ class SubscriptionCreateDestroySerializer(serializers.ModelSerializer):
         ).first()
         if subscription is not None:
             raise serializers.ValidationError(
-                'Already following'
+                'Already subscribed'
             )
         return super().validate(attrs)
 

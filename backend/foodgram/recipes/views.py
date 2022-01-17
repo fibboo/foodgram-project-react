@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, filters, permissions
 from rest_framework.permissions import AllowAny
@@ -41,11 +42,24 @@ class IngredientMixinView(RetrieveListMixinView):
     filter_backends = (IngredientSearchFilter,)
     search_fields = ('^name',)
 
-# class FavoriteCreateDeleteView(
-#     mixins.DestroyModelMixin, viewsets.GenericViewSet
-# ):
-#     serializer_class = serializers.FavoriteSerializer()
-#     pagination_class = EmptyPagination
-#
-#     def get_queryset(self):
-#         return Favorite.objects.filter(user=self.request.user)
+class FavoriteCreateDeleteView(
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet,
+):
+    queryset = Favorite.objects.all()
+    serializer_class = serializers.FavoriteSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = EmptyPagination
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=self.kwargs['recipe_id'])
+        favorite = get_object_or_404(
+            Favorite, user=user, recipe=recipe,
+        )
+        obj = queryset.get(pk=favorite.id)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
