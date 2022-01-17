@@ -5,3 +5,5 @@ djoser
 django-environ
 Pillow==8.4.0
 drf-extra-fields
+gunicorn==20.1.0
+psycopg2-binary==2.8.6

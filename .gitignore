@@ -56,6 +56,7 @@ coverage.xml
 *.pot
 
 # Django stuff:
+backend/app/logs/
 *.log
 local_settings.py
 db.sqlite3
@@ -102,7 +103,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-backend/foodgram/foodgram/.env
+*.env
 .venv
 env/
 venv/
@@ -130,5 +131,5 @@ dmypy.json
 
 # .idea
 .idea
-/backend/foodgram/static/
-/backend/foodgram/media/
+*/static/
+backend/media/

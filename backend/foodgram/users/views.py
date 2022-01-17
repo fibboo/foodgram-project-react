@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, permissions, pagination
 
 from recipes.pagination import EmptyPagination
-from users.models import Subscription
-from users.serializers import (
+from .models import Subscription
+from .serializers import (
     SubscriptionListSerializer, SubscriptionCreateDestroySerializer, )
 
 User = get_user_model()

@@ -31,24 +31,6 @@ class Subscription(models.Model):
         return f'{self.subscriber} {self.subscribed}'
 
 
-class Favorite(models.Model):
-    user = models.ForeignKey(
-        User, verbose_name='User', on_delete=models.CASCADE,
-        related_name='favorite_user'
-    )
-    recipe = models.ForeignKey(
-        Recipe, verbose_name='Recipe', on_delete=models.CASCADE,
-        related_name='favorite_recipe'
-    )
-
-    class Meta:
-        verbose_name = 'Избранное'
-        verbose_name_plural = 'Избранное'
-
-    def __str__(self):
-        return f'{self.user} {self.recipe}'
-
-
 class ShoppingCart(models.Model):
     user = models.OneToOneField(
         User, verbose_name='User', on_delete=models.CASCADE,

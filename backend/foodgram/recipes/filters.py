@@ -1,13 +1,13 @@
-import django_filters
+from django_filters.rest_framework import filters, FilterSet
 from rest_framework.filters import SearchFilter
 
-from recipes.models import Recipe, Ingredient
+from .models import Recipe
 
 
-class RecipeFilter(django_filters.FilterSet):
-    tags = django_filters.CharFilter(field_name='tags__slug')
-    is_favorited = django_filters.NumberFilter(method='filter_is_favorited')
-    is_in_shopping_cart = django_filters.NumberFilter(
+class RecipeFilter(FilterSet):
+    tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
+    is_favorited = filters.NumberFilter(method='filter_is_favorited')
+    is_in_shopping_cart = filters.NumberFilter(
         method='filter_is_in_shopping_cart',
     )
 
@@ -15,7 +15,7 @@ class RecipeFilter(django_filters.FilterSet):
         model = Recipe
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart',)
 
-    # to-do don't like implementation. Rewrite
+
     def filter_is_favorited(self, queryset, name, value):
         if value == 1:
             if self.request.user.is_authenticated:
@@ -23,12 +23,12 @@ class RecipeFilter(django_filters.FilterSet):
             return queryset
         return queryset.filter(favorite_recipe__user__isnull=True)
 
-    # to-do don't like implementation. Rewrite
     def filter_is_in_shopping_cart(self, queryset, name, value):
         if value == 1:
             if self.request.user.is_authenticated:
                 return queryset.filter(
-                    shopping_cart_recipe__shopping_cart__user__pk=self.request.user.id
+                    shopping_cart_recipe__shopping_cart__user__pk=
+                    self.request.user.id
                 )
             return queryset.none()
         return queryset.filter()

@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 
-from users.models import Favorite, ShoppingCartRecipe, ShoppingCart
+from users.models import ShoppingCartRecipe, ShoppingCart
 from users.serializers import CustomUserSerializer
-from recipes.models import Recipe, Tag, Ingredient, TagRecipe, IngredientRecipe
+from .models import Recipe, Tag, Ingredient, IngredientRecipe, Favorite
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -40,6 +40,9 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all(),
+        validators=[
+            validators.UniqueValidator(queryset=Recipe.objects.all())
+        ],
     )
     ingredients = IngredientRecipeSerializer(many=True)
     image = Base64ImageField()
@@ -64,7 +67,7 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
 
         for tag in tags:
             current_tag = get_object_or_404(Tag, pk=tag.id)
-            TagRecipe.objects.create(tag=current_tag, recipe=recipe)
+            recipe.tags.add(current_tag)
 
         for ingredient in ingredients:
             IngredientRecipe.objects.get_or_create(
@@ -98,7 +101,9 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
 class RecipeListRetrieveSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
-    ingredients = IngredientSerializer(many=True)
+    ingredients = IngredientRecipeSerializer(
+        many=True, source='ingredient_recipe'
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -128,3 +133,10 @@ class RecipeListRetrieveSerializer(serializers.ModelSerializer):
             ).exists()
 
         return None
+
+
+# class FavoriteSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Favorite
+#         fields = '__all__'
