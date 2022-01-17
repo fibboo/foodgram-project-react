@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins, filters, permissions
+from rest_framework import viewsets, mixins, permissions
 from rest_framework.permissions import AllowAny
 
 from .filters import RecipeFilter, IngredientSearchFilter
@@ -41,6 +41,7 @@ class IngredientMixinView(RetrieveListMixinView):
     pagination_class = EmptyPagination
     filter_backends = (IngredientSearchFilter,)
     search_fields = ('^name',)
+
 
 class FavoriteCreateDeleteView(
     mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet,

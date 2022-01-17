@@ -178,8 +178,4 @@ class FavoriteSerializer(serializers.ModelSerializer):
         recipe = get_object_or_404(
             Recipe, pk=self._context['view'].kwargs['recipe_id'],
         )
-        favorite = Favorite.objects.create(
-            user=user,
-            recipe=recipe,
-        )
-        return favorite
+        return Favorite.objects.create(user=user, recipe=recipe)

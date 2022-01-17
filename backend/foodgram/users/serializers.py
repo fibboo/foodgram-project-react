@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
@@ -81,7 +80,7 @@ class SubscriptionListSerializer(CustomUserSerializer):
 
     def get_recipes(self, obj):
         recipes_limit = (
-                self.context['request'].query_params.get('recipes_limit')
+            self.context['request'].query_params.get('recipes_limit')
         )
         if recipes_limit is None:
             recipes = obj.recipes.all()
@@ -139,8 +138,6 @@ class SubscriptionCreateDestroySerializer(serializers.ModelSerializer):
         subscribed = get_object_or_404(
             User, pk=self._context['view'].kwargs['user_id'],
         )
-        subscription = Subscription.objects.create(
-            subscriber=subscriber,
-            subscribed=subscribed,
+        return Subscription.objects.create(
+            subscriber=subscriber, subscribed=subscribed,
         )
-        return subscription
