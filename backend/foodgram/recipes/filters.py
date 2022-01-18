@@ -26,7 +26,7 @@ class RecipeFilter(FilterSet):
         if value == 1:
             if self.request.user.is_authenticated:
                 return queryset.filter(
-                    shopping_cart_recipe__shopping_cart__user__pk=self.request.user.id  # noqa: E501
+                    shopping_cart__user__pk=self.request.user.id
                 )
             return queryset.none()
         return queryset.filter()

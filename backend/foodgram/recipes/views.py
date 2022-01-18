@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, permissions
 from rest_framework.permissions import AllowAny
 
+from users.models import ShoppingCart
 from .filters import RecipeFilter, IngredientSearchFilter
 from .models import Recipe, Tag, Ingredient, Favorite
 from . import serializers
@@ -14,6 +15,13 @@ class RetrieveListMixinView(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
 ):
     permission_classes = (AllowAny,)
+
+
+class CreateDestroyMixinView(
+    mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet,
+):
+    permission_classes = (permissions.IsAuthenticated,)
+    pagination_class = EmptyPagination
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -43,22 +51,23 @@ class IngredientMixinView(RetrieveListMixinView):
     search_fields = ('^name',)
 
 
-class FavoriteCreateDeleteView(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet,
-):
-    queryset = Favorite.objects.all()
-    serializer_class = serializers.FavoriteSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-    pagination_class = EmptyPagination
+class CreateDeleteView(CreateDestroyMixinView):
+
+    def get_model(self):
+        if self.basename == 'favorite':
+            return Favorite
+        return ShoppingCart
+
+    def get_serializer_class(self):
+        serializers.CreateDeleteSerializer.Meta.model = self.get_model()
+        return serializers.CreateDeleteSerializer
 
     def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=self.kwargs['recipe_id'])
-        favorite = get_object_or_404(
-            Favorite, user=user, recipe=recipe,
+        obj = get_object_or_404(
+            self.get_model(), user=user, recipe=recipe,
         )
-        obj = queryset.get(pk=favorite.id)
         self.check_object_permissions(self.request, obj)
         return obj
 
