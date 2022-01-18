@@ -53,19 +53,20 @@ class IngredientMixinView(RetrieveListMixinView):
 
 class CreateDeleteView(CreateDestroyMixinView):
 
-    def get_serializer_class(self):
+    def get_model(self):
         if self.basename == 'favorite':
-            model = Favorite
-        else:
-            model = ShoppingCart
-        serializers.CreateDeleteSerializer.Meta.model = model
+            return Favorite
+        return ShoppingCart
+
+    def get_serializer_class(self):
+        serializers.CreateDeleteSerializer.Meta.model = self.get_model()
         return serializers.CreateDeleteSerializer
 
     def get_object(self):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=self.kwargs['recipe_id'])
         obj = get_object_or_404(
-            Favorite, user=user, recipe=recipe,
+            self.get_model(), user=user, recipe=recipe,
         )
         self.check_object_permissions(self.request, obj)
         return obj
