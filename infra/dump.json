@@ -508,42 +508,6 @@
   },
   {
     "model": "auth.permission",
-    "pk": 53,
-    "fields": {
-      "name": "Can add Рецепт в списке покупок",
-      "content_type": 14,
-      "codename": "add_shoppingcartrecipe"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 54,
-    "fields": {
-      "name": "Can change Рецепт в списке покупок",
-      "content_type": 14,
-      "codename": "change_shoppingcartrecipe"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 55,
-    "fields": {
-      "name": "Can delete Рецепт в списке покупок",
-      "content_type": 14,
-      "codename": "delete_shoppingcartrecipe"
-    }
-  },
-  {
-    "model": "auth.permission",
-    "pk": 56,
-    "fields": {
-      "name": "Can view Рецепт в списке покупок",
-      "content_type": 14,
-      "codename": "view_shoppingcartrecipe"
-    }
-  },
-  {
-    "model": "auth.permission",
     "pk": 57,
     "fields": {
       "name": "Can add Избранное",
@@ -788,14 +752,6 @@
     "fields": {
       "app_label": "users",
       "model": "subscription"
-    }
-  },
-  {
-    "model": "contenttypes.contenttype",
-    "pk": 14,
-    "fields": {
-      "app_label": "users",
-      "model": "shoppingcartrecipe"
     }
   },
   {

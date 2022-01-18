@@ -4,7 +4,7 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers, validators
 
 from recipes.models import Recipe
-from .models import Subscription, ShoppingCart
+from .models import Subscription
 
 User = get_user_model()
 
@@ -33,12 +33,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
                 'You should not use "me" as a username'
             )
         return value
-
-    def create(self, validated_data):
-        user = super().create(validated_data)
-        ShoppingCart.objects.get_or_create(user=user)
-
-        return user
 
 
 class CustomUserSerializer(UserSerializer):

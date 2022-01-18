@@ -11,7 +11,12 @@ router.register(
 )
 router.register(
     r'recipes/(?P<recipe_id>\d+)/favorite',
-    views.FavoriteCreateDeleteView, basename='favorite',
+    views.CreateDeleteView, basename='favorite',
+)
+
+router.register(
+    r'recipes/(?P<recipe_id>\d+)/shopping_cart',
+    views.CreateDeleteView, basename='shopping_cart',
 )
 
 

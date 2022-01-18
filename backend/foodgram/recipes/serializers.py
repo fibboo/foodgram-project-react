@@ -3,9 +3,8 @@ from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, validators
 
-from users.models import ShoppingCartRecipe, ShoppingCart
 from users.serializers import CustomUserSerializer, RecipeSerializer
-from .models import Recipe, Tag, Ingredient, IngredientRecipe, Favorite
+from .models import Recipe, Tag, Ingredient, IngredientRecipe
 
 User = get_user_model()
 
@@ -120,30 +119,23 @@ class RecipeListRetrieveSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         if self.context['request'].user.is_authenticated:
-            return Favorite.objects.filter(
-                user=self.context['request'].user, recipe=obj
-            ).exists()
+            return obj.favorite.all().exists()
 
         return None
 
     def get_is_in_shopping_cart(self, obj):
         if self.context['request'].user.is_authenticated:
-            shopping_cart = ShoppingCart.objects.get_or_create(
-                user=self.context['request'].user,
-            )
-            return ShoppingCartRecipe.objects.filter(
-                shopping_cart=shopping_cart[0], recipe=obj
-            ).exists()
+            return obj.shopping_cart.all().exists()
 
         return None
 
 
-class FavoriteSerializer(serializers.ModelSerializer):
+class CreateDeleteSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     recipe = serializers.SerializerMethodField()
 
     class Meta:
-        model = Favorite
+        model = None
         fields = '__all__'
 
     def to_representation(self, instance):
@@ -163,19 +155,19 @@ class FavoriteSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        favorite = Favorite.objects.filter(
+        obj = self.Meta.model.objects.filter(
             user=self.context['request'].user,
-            recipe=self._context['view'].kwargs['recipe_id']
+            recipe=self.context['view'].kwargs['recipe_id']
         ).first()
-        if favorite is not None:
+        if obj is not None:
             raise serializers.ValidationError(
-                'Already following'
+                'Such record is already exists'
             )
         return super().validate(attrs)
 
     def create(self, validated_data):
         user = self.context['request'].user
-        recipe = get_object_or_404(
-            Recipe, pk=self._context['view'].kwargs['recipe_id'],
+        obj = get_object_or_404(
+            Recipe, pk=self.context['view'].kwargs['recipe_id'],
         )
-        return Favorite.objects.create(user=user, recipe=recipe)
+        return self.Meta.model.objects.create(user=user, recipe=obj)

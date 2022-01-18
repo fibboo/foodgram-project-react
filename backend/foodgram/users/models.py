@@ -32,12 +32,12 @@ class Subscription(models.Model):
 
 
 class ShoppingCart(models.Model):
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User, verbose_name='User', on_delete=models.CASCADE,
         related_name='shopping_cart',
     )
-    recipes = models.ManyToManyField(
-        Recipe, verbose_name='Ingredients', through='ShoppingCartRecipe',
+    recipe = models.ForeignKey(
+        Recipe, verbose_name='Recipe', on_delete=models.CASCADE,
         related_name='shopping_cart',
     )
 
@@ -46,30 +46,10 @@ class ShoppingCart(models.Model):
         verbose_name_plural = 'Списки покупок'
         constraints = [
             models.UniqueConstraint(
-                fields=['user'],
-                name='only one shopping cart for user',
+                fields=['user', 'recipe'],
+                name='already in shopping cart',
             ),
         ]
 
-    def get_recipes(self):
-        return "\n".join([i.name for i in self.recipes.all()])
-
     def __str__(self):
-        return f'{self.user}\' shopping cart'
-
-
-class ShoppingCartRecipe(models.Model):
-    shopping_cart = models.ForeignKey(
-        ShoppingCart, on_delete=models.CASCADE,
-        # related_name='shopping_cart_recipe',
-    )
-    recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name='shopping_cart_recipe',
-    )
-
-    class Meta:
-        verbose_name = 'Рецепт в списке покупок'
-        verbose_name_plural = 'Рецепты в списке покупок'
-
-    def __str__(self):
-        return f'{self.recipe} in {self.shopping_cart}'
+        return f'{self.user} {self.recipe}'
