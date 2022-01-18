@@ -13,12 +13,10 @@ router.register(
     r'recipes/(?P<recipe_id>\d+)/favorite',
     views.CreateDeleteView, basename='favorite',
 )
-
 router.register(
     r'recipes/(?P<recipe_id>\d+)/shopping_cart',
     views.CreateDeleteView, basename='shopping_cart',
 )
-
 
 urlpatterns = [
     path('', include(router.urls))

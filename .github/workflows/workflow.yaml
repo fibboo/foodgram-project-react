@@ -74,7 +74,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ${{ secrets.PROJECT_DIR }}infra/
-            sudo docker pull fibboo/foodgram:latest
+            sudo docker pull fibboo/foodgram-backend:latest
             sudo docker-compose stop
             sudo docker-compose rm -f backend
             sudo docker-compose up -d
