@@ -8,7 +8,7 @@ fi
 domains=(foodgram.fibboo.space)
 rsa_key_size=4096
 data_path="./certbot"
-email="" # Adding a valid address is strongly recommended
+email="admin@fibboo.space" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
@@ -67,7 +67,7 @@ esac
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 docker-compose run --rm --entrypoint "\
-  certbot certonly --webroot -w /var/www/certbot \
+  certbot certonly --webroot -w /var/html/certbot \
     $staging_arg \
     $email_arg \
     $domain_args \
