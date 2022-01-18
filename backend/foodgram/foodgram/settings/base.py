@@ -4,7 +4,7 @@ import environ
 
 env = environ.Env(DEBUG=(bool, False))
 
-INFRA = env('INFRA', default=False)
+PRODUCTION = env('PRODUCTION', default=False)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

@@ -1,6 +1,6 @@
 from .base import *
 
-if INFRA:
+if PRODUCTION:
     from .prod import *
 else:
     from .local import *
