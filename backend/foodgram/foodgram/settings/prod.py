@@ -6,8 +6,6 @@ from . import BASE_DIR, env, DEBUG
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': env(
@@ -21,8 +19,6 @@ DATABASES = {
     }
 }
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = 'api/static/'
 

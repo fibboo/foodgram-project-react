@@ -2,29 +2,16 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, mixins, permissions
-from rest_framework.permissions import AllowAny
+from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 
 from users.models import ShoppingCart
 from .filters import RecipeFilter, IngredientSearchFilter
+from .mixins import RetrieveListMixinView, CreateDestroyMixinView
 from .models import Recipe, Tag, Ingredient, Favorite, IngredientRecipe
 from . import serializers
 from .pagination import EmptyPagination
 from .permissions import IsAuthorAdminOrReadOnly
-
-
-class RetrieveListMixinView(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
-):
-    permission_classes = (AllowAny,)
-
-
-class CreateDestroyMixinView(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet,
-):
-    permission_classes = (permissions.IsAuthenticated,)
-    pagination_class = EmptyPagination
 
 
 class RecipeViewSet(viewsets.ModelViewSet):

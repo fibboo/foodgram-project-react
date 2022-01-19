@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers, validators
+from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer, RecipeSerializer
 from .models import Recipe, Tag, Ingredient, IngredientRecipe
@@ -22,17 +23,12 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all(),
-        validators=[
-            validators.UniqueValidator(queryset=Recipe.objects.all())
-        ]
-    )
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit',
     )
-    amount = serializers.IntegerField()
+    amount = serializers.IntegerField(validators=[MinValueValidator(1)])
 
     class Meta:
         model = IngredientRecipe
@@ -42,12 +38,10 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
 class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Tag.objects.all(),
-        validators=[
-            validators.UniqueValidator(queryset=Recipe.objects.all())
-        ],
     )
     ingredients = IngredientRecipeSerializer(many=True)
     image = Base64ImageField()
+    cooking_time = serializers.IntegerField(validators=[MinValueValidator(1)])
 
     class Meta:
         fields = (
@@ -59,6 +53,26 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         context = {'request': request}
         return RecipeListRetrieveSerializer(instance, context=context).data
+
+    def empty_unique_validator(self, lst, field_name):
+        if not lst:
+            raise serializers.ValidationError(
+                {field_name: 'Must be at least one'}
+            )
+        check_list = []
+        for tag in lst:
+            if tag in check_list:
+                raise serializers.ValidationError(
+                    {field_name: f'{field_name} must be unique'}
+                )
+            check_list.append(tag)
+
+    def validate(self, data):
+        tags = self.initial_data.get('tags')
+        self.empty_unique_validator(tags, 'tags')
+        ingredients = self.initial_data.get('ingredients')
+        self.empty_unique_validator(ingredients, 'ingredients')
+        return data
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
@@ -78,6 +92,8 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
             )
         return recipe
 
+    # тэги при регактировании сохраняются, поэтому не стал ничего дописвать.
+    # Я много раз проверял, но не понимаю как это происходит.
     def update(self, instance, validated_data):
         """
         Adds new ingredients to recipe and deletes those that are not in the
@@ -91,11 +107,11 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
                 ingredient=ingredient['id'], recipe=instance,
                 amount=ingredient['amount'],
             )
-        ingredient_recipes = IngredientRecipe.objects.filter(recipe=instance)
-        for i in ingredient_recipes:
-            if i.ingredient not in ingredient_objs:
+        ingredients = IngredientRecipe.objects.filter(recipe=instance)
+        for ingredient in ingredients:
+            if ingredient.ingredient not in ingredient_objs:
                 IngredientRecipe.objects.get(
-                    recipe=instance, ingredient=i.ingredient,
+                    recipe=instance, ingredient=ingredient.ingredient,
                 ).delete()
         return super().update(instance, validated_data)
 
