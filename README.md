@@ -10,11 +10,11 @@ There was a ready frontend on React and API documentation (in folder docs). The 
 <br><br>
 You can visit demo here https://foodgram.fibboo.space/ <br>
 
-### Requirements:
+## Requirements:
 docker https://docs.docker.com/engine/install/ <br>
 docker-compose https://docs.docker.com/compose/install/
 
-### How to run:
+## How to run:
 
 Clone project and cd to infra
 ```
@@ -41,10 +41,9 @@ cd infra/
 chmod +x init-letsencrypt.sh
 sudo ./init-letsencrypt.sh
 ```
-
-admin credentials <br>
+## admin credentials
 username: fibboo<br>
 password: 9k2(a-@r='F^pQ:v
 
-### Thanks
+## Thanks
 Thank Phillip for his instruction on how to get ssl with nginx, Let’s Encrypt, certbot and Docker https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71 <br>
