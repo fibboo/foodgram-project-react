@@ -6,7 +6,7 @@ Food Assistant app. The site where users will post recipes, add
 other people's recipes to favorites and subscribe to publications of other authors. The shopping list service will allow
 users to create a list of products that need to be bought for the preparation of selected dishes.
 <br><br>
-There was a ready frontend on React and API documentation (in folder docs). The task was to make a backend and run it in Docker with frontend.
+There was a ready frontend on React and API documentation (in folder docs). The task was to make a backend on Django REST Framework and run it in Docker with frontend.
 <br><br>
 You can visit demo here https://foodgram.fibboo.space/ <br>
 
