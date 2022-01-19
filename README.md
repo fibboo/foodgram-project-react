@@ -1,6 +1,6 @@
 ![example workflow](https://github.com/fibboo/foodgram-project-react/actions/workflows/workflow.yaml/badge.svg)
 
-# Foodgramm
+# Foodgram
 ## About:
 Food Assistant app. The site where users will post recipes, add
 other people's recipes to favorites and subscribe to publications of other authors. The shopping list service will allow
@@ -39,6 +39,10 @@ cd infra/
 chmod +x init-letsencrypt.sh
 sudo ./init-letsencrypt.sh
 ```
+
+admin credentials <br>
+username: fibboo<br>
+password: 9k2(a-@r='F^pQ:v
 
 ### Thanks
 Thank Phillip for his instruction on how to get ssl with nginx, Let’s Encrypt, certbot and Docker https://pentacent.medium.com/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71 <br>
