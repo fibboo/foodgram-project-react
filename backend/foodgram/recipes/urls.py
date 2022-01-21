@@ -20,7 +20,10 @@ router.register(
 
 urlpatterns = [
     path('recipes/download_shopping_cart/',
-         views.DownloadShoppingCartViewSet.as_view(),
+         views.DownloadShoppingCartView.as_view(),
          name='download_shopping_cart'),
+    path('recipes/send_shopping_cart_to_telegram/',
+         views.DownloadShoppingCartView.as_view(),
+         name='send_shopping_cart_to_telegram'),
     path('', include(router.urls)),
 ]

@@ -33,6 +33,10 @@ const Cart = ({ updateOrders, orders }) => {
     api.downloadFile()
   }
 
+  const sendTelegram = () => {
+    api.sendTelegram()
+  }
+
   return <Main>
     <Container className={styles.container}>
       <MetaTags>
@@ -51,6 +55,10 @@ const Cart = ({ updateOrders, orders }) => {
           modifier='style_dark-blue'
           clickHandler={downloadDocument}
         >Скачать список</Button>}
+        {orders > 0 && <Button
+          modifier='style_dark-blue'
+          clickHandler={sendTelegram}
+        >Отправить список в телеграм</Button>}
       </div>
     </Container>
   </Main>

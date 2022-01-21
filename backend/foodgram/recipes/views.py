@@ -1,3 +1,4 @@
+import requests
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -5,6 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 
+from foodgram import settings
 from users.models import ShoppingCart
 from .filters import RecipeFilter, IngredientSearchFilter
 from .mixins import RetrieveListMixinView, CreateDestroyMixinView
@@ -65,7 +67,7 @@ class CreateDeleteView(CreateDestroyMixinView):
         return self.destroy(request, *args, **kwargs)
 
 
-class DownloadShoppingCartViewSet(APIView):
+class DownloadShoppingCartView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -74,7 +76,7 @@ class DownloadShoppingCartViewSet(APIView):
             'ingredient__name', 'ingredient__measurement_unit').order_by(
             'ingredient__name').annotate(ingredient_total=Sum('amount'))
 
-    def generate_file(self):
+    def generate_array(self):
         lines = []
         for ingredient in self.get_queryset():
             lines.append(f'{ingredient["ingredient__name"]}:'
@@ -83,8 +85,25 @@ class DownloadShoppingCartViewSet(APIView):
         return lines
 
     def get(self, request):
-        response = HttpResponse(content_type='text/plain')
-        response['Content-Disposition'] = ('attachment; '
-                                           'filename=список-покупок.txt')
-        response.writelines(self.generate_file())
+        if 'download_shopping_cart' in request.path:
+            response = HttpResponse(content_type='text/plain')
+            response['Content-Disposition'] = ('attachment; '
+                                               'filename=список-покупок.txt')
+            response.writelines(self.generate_array())
+        else:
+            send_message = self.send_message(''.join(self.generate_array()), 207614130)
+            if send_message.
+        return response
+
+    @staticmethod
+    def send_message(message, chat_id):
+        data = {
+            "chat_id": chat_id,
+            "text": message,
+            "parse_mode": "Markdown",
+        }
+        response = requests.post(
+            f'https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage',
+            data=data
+        )
         return response

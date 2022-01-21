@@ -18,10 +18,10 @@ services:
     env_file:
       - ./.env
   backend:
-    image: fibboo/foodgram-backend:latest
-#    build:
-#      context: ../backend/foodgram
-#      dockerfile: Dockerfile
+#    image: fibboo/foodgram-backend:latest
+    build:
+      context: ../backend/foodgram
+      dockerfile: Dockerfile
     restart: always
     volumes:
       - static_value:/app/static/

@@ -6,6 +6,10 @@ env = environ.Env(DEBUG=(bool, False))
 
 PRODUCTION = env('PRODUCTION', default=False)
 
+TELEGRAM_BOT_TOKEN = env(
+    'TELEGRAM_BOT_TOKEN',default='123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11'
+)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 environ.Env.read_env(os.path.join(BASE_DIR, '../.env'))

@@ -398,6 +398,20 @@ class Api {
       }
     ).then(this.checkFileDownloadResponse)
   }
+
+  sendTelegram () {
+    const token = localStorage.getItem('token')
+    return fetch(
+      `/api/recipes/send_shopping_cart_to_telegram/`,
+      {
+        method: 'GET',
+        headers: {
+          ...this._headers,
+          'authorization': `Token ${token}`
+        }
+      }
+    ).then(this.checkFileDownloadResponse)
+  }
 }
 
 export default new Api(process.env.API_URL || 'http://localhost', { 'content-type': 'application/json' })

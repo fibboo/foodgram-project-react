@@ -47,6 +47,7 @@
 .button_style_dark-blue {
   background: #4A61DD;
   color: #FFF;
+  margin: 0.2em;
 }
 
 .button_disabled {
