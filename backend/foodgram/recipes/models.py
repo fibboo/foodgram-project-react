@@ -52,9 +52,6 @@ class Recipe(models.Model):
         ordering = ('-id',)
 
     def get_ingredients(self):
-        # честно говоря не совсем понял почему это оптимальнее.
-        # Если я укажу просто self.ingredients.all().values('name'), то мне
-        # вернется queryset, а мне нужен текст
         return ", ".join(
             [i['name'] for i in self.ingredients.all().values('name')]
         )

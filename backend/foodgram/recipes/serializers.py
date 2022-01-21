@@ -68,9 +68,9 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
             check_list.append(tag)
 
     def validate(self, data):
-        tags = self.initial_data.get('tags')
+        tags = data.get('tags')
         self.empty_unique_validator(tags, 'tags')
-        ingredients = self.initial_data.get('ingredients')
+        ingredients = data.get('ingredients')
         self.empty_unique_validator(ingredients, 'ingredients')
         return data
 
@@ -92,8 +92,6 @@ class RecipeCreateUpdateDestroySerializer(serializers.ModelSerializer):
             )
         return recipe
 
-    # тэги при регактировании сохраняются, поэтому не стал ничего дописвать.
-    # Я много раз проверял, но не понимаю как это происходит.
     def update(self, instance, validated_data):
         """
         Adds new ingredients to recipe and deletes those that are not in the
