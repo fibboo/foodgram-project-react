@@ -7,10 +7,10 @@ from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 
 from foodgram import settings
-from users.models import ShoppingCart
 from .filters import RecipeFilter, IngredientSearchFilter
 from .mixins import RetrieveListMixinView, CreateDestroyMixinView
-from .models import Recipe, Tag, Ingredient, Favorite, IngredientRecipe
+from .models import (Recipe, Tag, Ingredient, Favorite,
+                     IngredientRecipe, ShoppingCart)
 from . import serializers
 from .pagination import EmptyPagination
 from .permissions import IsAuthorAdminOrReadOnly
@@ -84,6 +84,12 @@ class DownloadShoppingCartView(APIView):
                          f'{ingredient["ingredient__measurement_unit"]} \n')
         return lines
 
+    def get_chat_id(self):
+        if self.request.user.telegram_id is None:
+            self.request.user.t
+        return 207614130
+
+
     def get(self, request):
         if 'download_shopping_cart' in request.path:
             response = HttpResponse(content_type='text/plain')
@@ -91,8 +97,15 @@ class DownloadShoppingCartView(APIView):
                                                'filename=список-покупок.txt')
             response.writelines(self.generate_array())
         else:
-            send_message = self.send_message(''.join(self.generate_array()), 207614130)
-            if send_message.
+            send_message = self.send_message(
+                ''.join(self.generate_array()), self.get_chat_id()
+            )
+            print(send_message)
+            print(send_message.__dict__)
+            print(send_message.__dict__.keys())
+            response = HttpResponse()
+            response.status_code = send_message.status_code
+
         return response
 
     @staticmethod

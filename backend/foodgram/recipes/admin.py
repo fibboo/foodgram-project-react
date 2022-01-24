@@ -34,9 +34,14 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
     list_select_related = ('user', 'recipe',)
 
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe',)
+    list_select_related = ('user', 'recipe',)
+
 
 admin.site.register(models.Tag, TagAdmin)
 admin.site.register(models.Ingredient, IngredientAdmin)
 admin.site.register(models.Recipe, RecipeAdmin)
 admin.site.register(models.IngredientRecipe, IngredientRecipeAdmin)
 admin.site.register(models.Favorite, FavoriteAdmin)
+admin.site.register(models.ShoppingCart, ShoppingCartAdmin)

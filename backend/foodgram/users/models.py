@@ -1,10 +1,18 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Q, F
 
-from recipes.models import Recipe
 
-User = get_user_model()
+class User(AbstractUser):
+    """
+    Redefined User model with telegram_id field
+    """
+    telegram_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ['-id']
 
 
 class Subscription(models.Model):
@@ -29,27 +37,3 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f'{self.subscriber} {self.subscribed}'
-
-
-class ShoppingCart(models.Model):
-    user = models.ForeignKey(
-        User, verbose_name='User', on_delete=models.CASCADE,
-        related_name='shopping_cart',
-    )
-    recipe = models.ForeignKey(
-        Recipe, verbose_name='Recipe', on_delete=models.CASCADE,
-        related_name='shopping_cart',
-    )
-
-    class Meta:
-        verbose_name = 'Список покупок'
-        verbose_name_plural = 'Списки покупок'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name='already in shopping cart',
-            ),
-        ]
-
-    def __str__(self):
-        return f'{self.user} {self.recipe}'

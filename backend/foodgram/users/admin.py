@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from . import models
 
@@ -8,10 +9,5 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_select_related = ('subscriber', 'subscribed',)
 
 
-class ShoppingCartAdmin(admin.ModelAdmin):
-    list_display = ('user', 'recipe',)
-    list_select_related = ('user', 'recipe',)
-
-
 admin.site.register(models.Subscription, SubscriptionAdmin)
-admin.site.register(models.ShoppingCart, ShoppingCartAdmin)
+admin.site.register(models.User, UserAdmin)
