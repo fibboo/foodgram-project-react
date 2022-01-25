@@ -1,6 +1,6 @@
 import requests
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions
@@ -86,8 +86,13 @@ class DownloadShoppingCartView(APIView):
 
     def get_chat_id(self):
         if self.request.user.telegram_id is None:
-            self.request.user.t
-        return 207614130
+            user_id = self.request.user.id
+            response = HttpResponseRedirect(
+                f'https://t.me/fibboo_bot?start={user_id}'
+            )
+            print(type(response))
+            return response
+        return self.request.user.telegram_id
 
 
     def get(self, request):
@@ -97,14 +102,15 @@ class DownloadShoppingCartView(APIView):
                                                'filename=список-покупок.txt')
             response.writelines(self.generate_array())
         else:
-            send_message = self.send_message(
-                ''.join(self.generate_array()), self.get_chat_id()
-            )
-            print(send_message)
-            print(send_message.__dict__)
-            print(send_message.__dict__.keys())
-            response = HttpResponse()
-            response.status_code = send_message.status_code
+            chat_id = self.get_chat_id()
+            if type(chat_id) == HttpResponseRedirect:
+                return chat_id
+            else:
+                send_message = self.send_message(
+                    ''.join(self.generate_array()), chat_id
+                )
+                response = HttpResponse()
+                response.status_code = send_message.status_code
 
         return response
 
