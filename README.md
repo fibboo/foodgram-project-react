@@ -28,10 +28,8 @@ Push for magic to happen
 
 After first deploy migrate and collect static.
 ```
-sudo docker-compose exec yatube python manage.py migrate
-sudo docker-compose exec yamdb python manage.py migrate
-sudo docker-compose exec yatube python manage.py collectstatic
-sudo docker-compose exec yamdb python manage.py collectstatic
+sudo docker-compose exec backend python manage.py migrate
+sudo docker-compose exec backend python manage.py collectstatic
 ```
 
 Login to your server, and run init-letsencrypt.sh. This script will get ssl for your domain
